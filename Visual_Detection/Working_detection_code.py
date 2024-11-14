@@ -51,6 +51,7 @@ def process_frame(frame):
         print(f"Bounding Box Center: ({x_center}, {y_center})")
 
         #while the error is < 10 then keep calulating an dmoving motors 
+
     # Update the frame in the queue
     try:
         frame_queue.put(annotated_frame, block=False)
