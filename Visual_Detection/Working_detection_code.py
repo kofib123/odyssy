@@ -13,7 +13,7 @@ picam2.configure("preview")
 picam2.start()
 
 # Load the YOLOv8 model
-model = YOLO("/home/ODYSSY/last.pt")
+model = YOLO("/home/ODYSSY/important_code/Visual_Detection/last.pt")
 model.fuse()
 
 threshold = 0.7
