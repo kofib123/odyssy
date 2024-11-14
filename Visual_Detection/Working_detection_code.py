@@ -20,13 +20,22 @@ threshold = 0.7
 frame_queue = queue.Queue(maxsize=1)  # Queue with maxsize=1 to always get the latest frame
 
 def process_frame(frame):
-    results = model(frame)
-
-    # Filter detections based on threshold
-    valid_boxes = [box for box in results[0].boxes if box.conf >= threshold]
+    #Calculating the screens midpoint 
+    screen_height, screen_width, _ = frame.shape
+    screen_midpoint = (screen_width // 2, screen_height // 2)
 
     # Create a new frame with filtered detections; Green: (0, 255, 0), purple: (162, 94, 142),
     annotated_frame = frame.copy()
+
+    cv2.circle(annotated_frame, screen_midpoint, 5, (255, 0, 0), -1)  # Draw screen center in blue
+    cv2.putText(annotated_frame, "Screen Center", (screen_midpoint[0] - 50, screen_midpoint[1] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+
+    # Filter detections based on threshold (Processing YOLO detections)
+    results = model(frame)
+    valid_boxes = [box for box in results[0].boxes if box.conf >= threshold]
+
+
     for box in valid_boxes:
         x1, y1, x2, y2 = map(int, box.xyxy[0])
         cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
