@@ -33,6 +33,13 @@ def process_frame(frame):
         label = f"{box.cls[0]} {box.conf[0]:.2f}"
         cv2.putText(annotated_frame, 'Testudo', (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
+        #Calculate the center of the bounding box
+        x_center = (x1+x2)//2
+        y_center = (y1+y2)//2
+        cv2.circle(annotated_frame, (x_center, y_center), 5, (0, 0, 255), -1)  # Draw center point in red
+        
+        #Print the 
+        print(f"Bounding Box Center: ({x_center}, {y_center})")
     # Update the frame in the queue
     try:
         frame_queue.put(annotated_frame, block=False)
