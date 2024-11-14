@@ -20,18 +20,37 @@ threshold = 0.7
 frame_queue = queue.Queue(maxsize=1)  # Queue with maxsize=1 to always get the latest frame
 
 def process_frame(frame):
-    results = model(frame)
-
-    # Filter detections based on threshold
-    valid_boxes = [box for box in results[0].boxes if box.conf >= threshold]
+    #Calculating the screens midpoint 
+    screen_height, screen_width, _ = frame.shape
+    screen_midpoint = (screen_width // 2, screen_height // 2)
 
     # Create a new frame with filtered detections; Green: (0, 255, 0), purple: (162, 94, 142),
     annotated_frame = frame.copy()
+    # This will draw the blue circle at the screens midpoint and stays there 
+    cv2.circle(annotated_frame, screen_midpoint, 5, (255, 0, 0), -1)  # Draw screen center in blue
+    cv2.putText(annotated_frame, "Screen Center", (screen_midpoint[0] - 50, screen_midpoint[1] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+
+    # Filter detections based on threshold (Processing YOLO detections)
+    results = model(frame)
+    valid_boxes = [box for box in results[0].boxes if box.conf >= threshold]
+
+
     for box in valid_boxes:
         x1, y1, x2, y2 = map(int, box.xyxy[0])
         cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
         label = f"{box.cls[0]} {box.conf[0]:.2f}"
         cv2.putText(annotated_frame, 'Testudo', (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+        #Calculate the center of the bounding box
+        x_center = (x1+x2)//2
+        y_center = (y1+y2)//2
+        cv2.circle(annotated_frame, (x_center, y_center), 5, (0, 0, 255), -1)  # Draw center point in red
+
+        #Print the 
+        print(f"Bounding Box Center: ({x_center}, {y_center})")
+
+        #while the error is < 10 then keep calulating an dmoving motors 
 
     # Update the frame in the queue
     try:
