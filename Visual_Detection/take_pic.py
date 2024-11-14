@@ -16,3 +16,4 @@ picam2.capture_file(image_path)
 picam2.stop()
 
 print(f"Image saved at {image_path}")
+
