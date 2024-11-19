@@ -15,7 +15,7 @@ FORWARD_6, REVERSE_6 = 13, 26   # Buck2_IN3 - Forward Drive & Buck2_IN4 - Revers
 
 
 motors = {
-    "bottom_left": Motor(FORWARD_1, REVERSE_1),  #GPIO: 27,22 (bottom_LEFT) & GPIO: 23,24 (TOP_RIGHT) 
+    "bottom_left": Motor(FORWARD_1, REVERSE_1),  #GPIO: 27,22 (bottom_LEFT) & GPIO: 23,24 (bottom_RIGHT) 
     "bottom_right" : Motor(FORWARD_2, REVERSE_2),  
     "front_left" : Motor(FORWARD_3, REVERSE_3), #GPIO: 5,6 (FRONT_LEFT) & GPIO: 12,16 (FRONT_RIGHT)
     "front_right" : Motor(FORWARD_4, REVERSE_4), 
