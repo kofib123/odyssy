@@ -1,4 +1,8 @@
-
+"""
+This file contains the basic commands that will operate the movement aspect of the submersible vehicle. The motor objects
+are stored in a dict, where the keys are the locations of that specific motor. The GPIO Pin out is also explained and shown
+below.
+"""
 from gpiozero import Motor
 from time import sleep 
 
@@ -13,7 +17,9 @@ FORWARD_6, REVERSE_6 = 13, 26   # Buck2_IN3 - Forward Drive & Buck2_IN4 - Revers
 
 
 
-
+""" 
+motors dict stores the Motor objects as values 
+"""
 motors = {
     "bottom_left": Motor(FORWARD_1, REVERSE_1),  #GPIO: 27,22 (bottom_LEFT) & GPIO: 23,24 (bottom_RIGHT) 
     "bottom_right" : Motor(FORWARD_2, REVERSE_2),  
@@ -48,7 +54,11 @@ def move_vertical(up: bool, speed: float, duration: int):
     motors[motorBL].stop()
     motors[motorBR].stop()
     
-def move_horizontal(forward: bool, speed: float, duration: int):
+""" 
+Controls to move the vehicle either forward or backward. 
+If the forward bool is True, then move forward, if False, move backward 
+"""
+def move_horizontal(forward: bool, speed: float, duration: int): 
     if forward:
         motors["bottom_left"].forward(speed)
         motors["bottom_right"].forward(speed)
@@ -57,6 +67,7 @@ def move_horizontal(forward: bool, speed: float, duration: int):
         motors["bottom_right"].backward(speed)
 
     sleep(duration)
+    #Reverse its motion for about a second(adjust) to stop movement of vehicle
     motors["bottom_left"].reverse()
     motors["bottom_right"].reverse()
     sleep(1)
@@ -68,7 +79,7 @@ def move_horizontal(forward: bool, speed: float, duration: int):
     direction: True -> Left Turn, False -> Right Turn 
     duration: 
 """   
-def turn(direction: bool, speed: float, duration: int):
+def turn(direction: bool, speed: float, duration: int): # Also Yaw
     onMotor, diffMotor = "bottom_left", "bottom_right" if direction else "bottom_right", "bottom_left"
     motors[onMotor].forward(speed)
     motors[diffMotor].forward(0.2*speed)

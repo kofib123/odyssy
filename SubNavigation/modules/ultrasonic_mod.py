@@ -1,3 +1,7 @@
+"""_summary_
+This file controls the ultrasonic sensor using the RX/TX ports of the ultrasonic sensor. 
+This converts the arduino code 1-to-1 but must be tested to confirm
+"""
 import serial
 import time
 
