@@ -112,4 +112,3 @@ class FrameProcessor:
                 frame_queue.put(annotated_frame, block=False)
             except queue.Empty:
                 pass
-
