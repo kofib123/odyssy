@@ -21,12 +21,15 @@ def read_distance():
     ser.write(bytes([COM]))
     time.sleep(0.1)  # Small delay to allow response
 
+    
+
     # Check if data is available
     if ser.in_waiting > 0:
         time.sleep(0.004)  # Slight delay to ensure complete data is read
         first_byte = ser.read(1)
         if first_byte == b'\xff':  # Check for start byte
             buffer_RTT[0] = 0xFF
+            
             # Read the next 3 bytes
             for i in range(1, 4):
                 buffer_RTT[i] = ord(ser.read(1))  # Convert byte to int
@@ -49,6 +52,7 @@ def read_distance():
 try:
     while True:
         distance = read_distance()
+        #print("Initial Run")
         time.sleep(0.1)  # Adjust based on sensor's refresh rate
 except KeyboardInterrupt:
     print("Exiting program...")
