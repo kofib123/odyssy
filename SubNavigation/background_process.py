@@ -27,9 +27,10 @@ This architecture ensures modularity and allows the main program to access senso
 real-time, enabling tasks like navigation, object detection, and control.
 """
 
-from multiprocessing import Process, Value
+from multiprocessing import Process, Value, Queue
 from modules.ultrasonic_mod import setup_sensor, read_sensor
 from modules.inertial_mod import setup_imu, read_imu
+from Visual_Detection.Working_detection_code import detect_code, stop_camera
 import time
 
 def ultrasonic_reading_process(shared_distance):
@@ -64,3 +65,17 @@ def imu_reading_process(shared_data):
         except KeyboardInterrupt:
             print("Stopping IMU process...")
             break
+
+
+
+def start_detection_process(result_queue):
+    """
+    Start the detection process from Working_DetectionCode.
+    """
+    detect_code(result_queue)  # Call the detection function
+
+def stop_detection_process():
+    """
+    Stop the camera when exiting the detection process.
+    """
+    stop_camera()
