@@ -14,6 +14,7 @@ picam2.start()
 
 # Load the YOLOv8 model
 model = YOLO("/Users/ameenatafolabi/odyssy/Visual_Detection/Yellow_testudo/train1/best(2)")
+
 model.fuse()
 
 threshold = 0.7
