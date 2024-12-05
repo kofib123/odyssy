@@ -13,7 +13,6 @@ It handles the following operations:
    - Coordinates movement control for the submersible, including direction adjustments
      (horizontal, vertical, turning, and pitching) based on sensor feedback.
 
-
      
 """
 
@@ -63,6 +62,7 @@ if __name__ == "__main__":
     frame_queue = queue.Queue(maxsize=1)
     with Manager() as manager:
 
+
         shared_data = manager.dict()
 
         # Start the IMU process
@@ -70,7 +70,6 @@ if __name__ == "__main__":
         imu_process.start()
 
         # Start the detection process
-
 
 
         model_path = "/path/to/your/model"

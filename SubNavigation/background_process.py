@@ -73,10 +73,6 @@ def imu_reading_process(shared_data):
             print("Stopping IMU process...")
             break
 
-
-
-
-
 def detection_loop(frame_queue, shared_data, model_path, threshold=0.7):
     """
     Infinite loop to perform object detection and update shared data.
@@ -125,4 +121,3 @@ def detection_loop(frame_queue, shared_data, model_path, threshold=0.7):
         print("Stopping detection loop...")
     finally:
         picam2.stop()
-
