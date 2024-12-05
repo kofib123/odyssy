@@ -16,7 +16,7 @@ It handles the following operations:
 """
 
 from multiprocessing import Process, Value, Manager
-from background_process import ultrasonic_reading_process, imu_reading_process
+from background_process import ultrasonic_reading_process, imu_reading_process, detection_loop
 from modules.movement_mod import move_horizontal, move_vertical, turn, pitch
 from modules.calibration_mod import imu_adjustment
 
@@ -29,36 +29,41 @@ def check_distance(shared_distance):
         return shared_distance.value
 
 if __name__ == "__main__":
-    # Shared variable to store distance
-    distance_value = Value('d', -1.0)  # 'd' stands for double (float)
-
+    # Shared variables and queues
+    frame_queue = queue.Queue(maxsize=1)
     with Manager() as manager:
-        imu_data = manager.dict()
+        shared_data = manager.dict()
 
-        # Start the ultrasonic sensor process
-        ultrasonic_process = Process(target=ultrasonic_reading_process, args=(distance_value,))
-        ultrasonic_process.start()
-
-        # Start the IMU sensor process
-        imu_process = Process(target=imu_reading_process, args=(imu_data,))
+        # Start the IMU process
+        imu_process = Process(target=imu_reading_process, args=(shared_data))
         imu_process.start()
+
+        # Start the detection process
+        model_path = "/path/to/your/model"
+        detection_process = Process(target=detection_loop, args=(frame_queue, shared_data, model_path))
+        detection_process.start()
 
         try:
             while True:
-                # Check and print the ultrasonic distance in real-time
-                distance = check_distance(distance_value)
-                print(f"Ultrasonic Sensor Distance: {distance} mm")
+                # Access shared data
+                detections = shared_data.get("detections", [])
+                print(f"Detected Objects: {detections}")
 
-                # Perform IMU adjustments
-                imu_adjustment(imu_data)
+                # Display frames from the queue
+                try:
+                    annotated_frame = frame_queue.get(timeout=1)
+                    cv2.imshow("Camera", annotated_frame)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        break
+                except queue.Empty:
+                    continue
 
-                time.sleep(1.0)  # Adjust the loop frequency as needed
         except KeyboardInterrupt:
             print("Stopping main process...")
-
-            # Terminate both processes
-            ultrasonic_process.terminate()
+        finally:
+            # Clean up processes
             imu_process.terminate()
-
-            ultrasonic_process.join()
+            detection_process.terminate()
             imu_process.join()
+            detection_process.join()
+            cv2.destroyAllWindows()
