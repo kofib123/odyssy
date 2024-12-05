@@ -12,6 +12,7 @@ It handles the following operations:
 3. Movement Control:
    - Coordinates movement control for the submersible, including direction adjustments
      (horizontal, vertical, turning, and pitching) based on sensor feedback.
+
      
 """
 
@@ -23,10 +24,25 @@ from modules.calibration_mod import imu_adjustment
 
 import time
 
+
 def check_distance(shared_distance):
     """Function to check the current distance value."""
     with shared_distance.get_lock():
         return shared_distance.value
+      
+def movement(screen_x, screen_y, x_center, y_center):
+    """
+    Calculate movement adjustments based on detected positions.
+    """
+    move_x = screen_x - x_center
+    move_y = screen_y - y_center
+    print(f"Move X: {move_x}, Move Y: {move_y}")
+    # Add motor control commands here
+    #NEED TO CHANGE THE PARAMS 
+    move_horizontal(move_x)  # Example: move in the x-direction
+    move_vertical(move_y)    # Example: move in the y-direction
+    #now just move forwards 
+    return move_x, move_y
 
 if __name__ == "__main__":
     # Shared variables and queues
@@ -67,3 +83,4 @@ if __name__ == "__main__":
             imu_process.join()
             detection_process.join()
             cv2.destroyAllWindows()
+

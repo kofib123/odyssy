@@ -4,6 +4,8 @@ are stored in a dict, where the keys are the locations of that specific motor. T
 below.
 """
 from gpiozero import Motor
+# from Visual_Detection.Working_detection_code import detect_code
+from picamera2 import Picamera2
 from time import sleep 
 
 #///////////////// Define Motor Driver GPIO Pins /////////////////

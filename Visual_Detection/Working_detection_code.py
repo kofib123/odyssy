@@ -4,66 +4,58 @@ import queue
 from picamera2 import Picamera2
 from ultralytics import YOLO
 
-# Initialize the Picamera2
+# =============================
+# Initialization
+# =============================
 picam2 = Picamera2()
-picam2.preview_configuration.main.size = (640, 480)  # Increased resolution for better detection
+picam2.preview_configuration.main.size = (640, 480)
 picam2.preview_configuration.main.format = "RGB888"
 picam2.preview_configuration.align()
 picam2.configure("preview")
 picam2.start()
 
-# Load the YOLOv8 model
-model = YOLO("/home/ODYSSY/last.pt")
+model = YOLO("/Users/ameenatafolabi/odyssy/Visual_Detection/Yellow_testudo/train1/best(2)")
 model.fuse()
 
-threshold = 0.7
-frame_queue = queue.Queue(maxsize=1)  # Queue with maxsize=1 to always get the latest frame
+THRESHOLD = 0.7
+FRAME_QUEUE = queue.Queue(maxsize=1)
 
-def process_frame(frame):
+# =============================
+# Functions
+# =============================
+def process_frame(frame, result_queue):
+    """
+    Process a frame, perform object detection, and add results to the queue.
+    """
+    # screen_height, screen_width, _ = frame.shape
+    # screen_midpoint = (screen_width // 2, screen_height // 2)
     results = model(frame)
+    valid_boxes = [box for box in results[0].boxes if box.conf >= THRESHOLD]
 
-    # Filter detections based on threshold
-    valid_boxes = [box for box in results[0].boxes if box.conf >= threshold]
-
-    # Create a new frame with filtered detections; Green: (0, 255, 0), purple: (162, 94, 142),
-    annotated_frame = frame.copy()
-    for box in valid_boxes:
+    if valid_boxes:
+        box = valid_boxes[0]
         x1, y1, x2, y2 = map(int, box.xyxy[0])
-        cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        label = f"{box.cls[0]} {box.conf[0]:.2f}"
-        cv2.putText(annotated_frame, 'Testudo', (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        x_center, y_center = (x1 + x2) // 2, (y1 + y2) // 2
+        result_queue.put((x_center, y_center))  # Send detection data to the queue **
 
-    # Update the frame in the queue
-    try:
-        frame_queue.put(annotated_frame, block=False)
-    except queue.Full:
-        try:
-            frame_queue.get_nowait()  # Discard the old frame
-            frame_queue.put(annotated_frame, block=False)
-        except queue.Empty:
-            pass
-
-def capture_and_process():
+def capture_and_process(result_queue):
+    """
+    Continuously capture frames and process them for detection.
+    """
     while True:
         frame = picam2.capture_array()
-        process_frame(frame)
+        process_frame(frame, result_queue)
 
-# Start capturing and processing frames in a separate thread
-capture_thread = threading.Thread(target=capture_and_process)
-capture_thread.daemon = True
-capture_thread.start()
+def detect_code(result_queue):
+    """
+    Start detection in a separate thread or process.
+    """
+    capture_thread = threading.Thread(target=capture_and_process, args=(result_queue,), daemon=True)
+    capture_thread.start()
 
-# Main thread: Display the frames
-try:
-    while True:
-        try:
-            annotated_frame = frame_queue.get(timeout=1)
-            cv2.imshow("Camera", annotated_frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-        except queue.Empty:
-            continue
-finally:
+def stop_camera():
+    """
+    Stop the camera safely.
+    """
     picam2.stop()
     cv2.destroyAllWindows()
-

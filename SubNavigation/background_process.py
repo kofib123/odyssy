@@ -27,6 +27,7 @@ This architecture ensures modularity and allows the main program to access senso
 real-time, enabling tasks like navigation, object detection, and control.
 """
 
+
 from multiprocessing import Process, Value
 from modules.ultrasonic_mod import setup_sensor, read_sensor
 from modules.inertial_mod import setup_imu, read_imu
@@ -36,6 +37,7 @@ import cv2
 from modules.detection_mod import process_frame
 from picamera2 import Picamera2
 from ultralytics import YOLO
+
 
 def ultrasonic_reading_process(shared_distance):
     """Process to continuously read the sensor."""
@@ -69,6 +71,7 @@ def imu_reading_process(shared_data):
         except KeyboardInterrupt:
             print("Stopping IMU process...")
             break
+
 
 
 
@@ -120,3 +123,4 @@ def detection_loop(frame_queue, shared_data, model_path, threshold=0.7):
         print("Stopping detection loop...")
     finally:
         picam2.stop()
+
