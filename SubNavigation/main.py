@@ -13,6 +13,7 @@ It handles the following operations:
    - Coordinates movement control for the submersible, including direction adjustments
      (horizontal, vertical, turning, and pitching) based on sensor feedback.
 
+
      
 """
 
@@ -20,9 +21,8 @@ from multiprocessing import Process, Value, Manager
 from background_process import ultrasonic_reading_process, imu_reading_process, detection_loop
 from modules.movement_mod import move_horizontal, move_vertical, turn, pitch
 from modules.calibration_mod import imu_adjustment
-
-
 import time
+from picamera2 import Picamera2
 
 
 def check_distance(shared_distance):
@@ -44,10 +44,25 @@ def movement(screen_x, screen_y, x_center, y_center):
     #now just move forwards 
     return move_x, move_y
 
+def movement(screen_x, screen_y, x_center, y_center):
+    """
+    Calculate movement adjustments based on detected positions.
+    """
+    move_x = screen_x - x_center
+    move_y = screen_y - y_center
+    print(f"Move X: {move_x}, Move Y: {move_y}")
+    # Add motor control commands here
+    #NEED TO CHANGE THE PARAMS 
+    move_horizontal(move_x)  # Example: move in the x-direction
+    move_vertical(move_y)    # Example: move in the y-direction
+    #now just move forwards 
+    return move_x, move_y
+
 if __name__ == "__main__":
     # Shared variables and queues
     frame_queue = queue.Queue(maxsize=1)
     with Manager() as manager:
+
         shared_data = manager.dict()
 
         # Start the IMU process
@@ -55,10 +70,12 @@ if __name__ == "__main__":
         imu_process.start()
 
         # Start the detection process
+
+
+
         model_path = "/path/to/your/model"
         detection_process = Process(target=detection_loop, args=(frame_queue, shared_data, model_path))
         detection_process.start()
-
         try:
             while True:
                 # Access shared data

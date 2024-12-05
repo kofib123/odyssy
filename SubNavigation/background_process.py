@@ -28,9 +28,10 @@ real-time, enabling tasks like navigation, object detection, and control.
 """
 
 
-from multiprocessing import Process, Value
+from multiprocessing import Process, Value, Queue
 from modules.ultrasonic_mod import setup_sensor, read_sensor
 from modules.inertial_mod import setup_imu, read_imu
+from Visual_Detection.Working_detection_code import detect_code, stop_camera
 import time
 import queue
 import cv2
@@ -71,6 +72,7 @@ def imu_reading_process(shared_data):
         except KeyboardInterrupt:
             print("Stopping IMU process...")
             break
+
 
 
 
