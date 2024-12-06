@@ -4,14 +4,20 @@ are stored in a dict, where the keys are the locations of that specific motor. T
 below.
 """
 from gpiozero import Motor
+# from Visual_Detection.Working_detection_code import detect_code
+from picamera2 import Picamera2
 from time import sleep 
 
 #///////////////// Define Motor Driver GPIO Pins /////////////////
-
+#Bottom_Left and Bottom_Right
 FORWARD_1, REVERSE_1 = 27, 22	# Buck1_IN1 - Forward Drive & Buck1_IN2 - Reverse Drive 
-FORWARD_2, REVERSE_2 = 23, 24	# Buck1_IN3 - Forward Drive & Buck1_IN4 - Reverse Drive
+FORWARD_2, REVERSE_2 = 23, 24	# Buck1_IN3 - Forward Drive & Buck1_IN4 - Reverse Drive   
+
+#Front_left and Front_right
 FORWARD_3, REVERSE_3 = 5, 6     # Buck2_IN1 - Forward Drive & Buck2_IN2 - Reverse Drive
 FORWARD_4, REVERSE_4 = 12, 16   # Buck2_IN3 - Forward Drive & Buck2_IN4 - Reverse Drive
+
+# Back_left and Back_right
 FORWARD_5, REVERSE_5 = 4, 17    # Buck2_IN1 - Forward Drive & Buck2_IN2 - Reverse Drive
 FORWARD_6, REVERSE_6 = 13, 26   # Buck2_IN3 - Forward Drive & Buck2_IN4 - Reverse Drive
 
