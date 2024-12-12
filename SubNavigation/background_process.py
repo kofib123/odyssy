@@ -28,7 +28,8 @@ real-time, enabling tasks like navigation, object detection, and control.
 """
 
 
-from multiprocessing import Process, Value
+
+from multiprocessing import Process, Value, Queue
 from modules.ultrasonic_mod import setup_sensor, read_sensor
 from modules.inertial_mod import setup_imu, read_imu
 import time
@@ -71,8 +72,6 @@ def imu_reading_process(shared_data):
         except KeyboardInterrupt:
             print("Stopping IMU process...")
             break
-
-
 
 
 def detection_loop(frame_queue, shared_data, model_path, threshold=0.7):
@@ -123,4 +122,3 @@ def detection_loop(frame_queue, shared_data, model_path, threshold=0.7):
         print("Stopping detection loop...")
     finally:
         picam2.stop()
-

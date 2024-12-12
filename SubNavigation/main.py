@@ -29,7 +29,7 @@ def check_distance(shared_distance):
     """Function to check the current distance value."""
     with shared_distance.get_lock():
         return shared_distance.value
-      
+
 def movement(screen_x, screen_y, x_center, y_center):
     """
     Calculate movement adjustments based on detected positions.
@@ -48,13 +48,14 @@ if __name__ == "__main__":
     # Shared variables and queues
     frame_queue = queue.Queue(maxsize=1)
     with Manager() as manager:
-        shared_data = manager.dict()
 
+        shared_data = manager.dict()
         # Start the IMU process
         imu_process = Process(target=imu_reading_process, args=(shared_data))
         imu_process.start()
 
         # Start the detection process
+
         model_path = "/path/to/your/model"
         detection_process = Process(target=detection_loop, args=(frame_queue, shared_data, model_path))
         detection_process.start()
