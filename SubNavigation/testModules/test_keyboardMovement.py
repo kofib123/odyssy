@@ -6,8 +6,8 @@ from time import sleep
 # Movement functions and motor definitions are assumed to be imported or defined above
 
 # Set default speed and duration variables
-DEFAULT_SPEED = 0.8
-DEFAULT_DURATION = 2
+DEFAULT_SPEED = 0.5
+DEFAULT_DURATION = 0.5
 
 def handle_keypress():
     print("Controls: \n")
