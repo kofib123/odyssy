@@ -7,6 +7,9 @@ from gpiozero import Motor
 # from Visual_Detection.Working_detection_code import detect_code
 from picamera2 import Picamera2
 from time import sleep 
+# Back_left and Back_right
+#FORWARD_5, REVERSE_5 = 4, 17    # Buck2_IN1 - Forward Drive & Buck2_IN2 - Reverse Drive
+#FORWARD_6, REVERSE_6 = 13, 26   # Buck2_IN3 - Forward Drive & Buck2_IN4 - Reverse Drive
 
 #///////////////// Define Motor Driver GPIO Pins /////////////////
 #Bottom_Left and Bottom_Right
@@ -16,23 +19,14 @@ FORWARD_2, REVERSE_2 = 23, 24	# Buck1_IN3 - Forward Drive & Buck1_IN4 - Reverse 
 #Front_left and Front_right
 FORWARD_3, REVERSE_3 = 5, 6     # Buck2_IN1 - Forward Drive & Buck2_IN2 - Reverse Drive
 FORWARD_4, REVERSE_4 = 12, 16   # Buck2_IN3 - Forward Drive & Buck2_IN4 - Reverse Drive
-
-# Back_left and Back_right
-FORWARD_5, REVERSE_5 = 4, 17    # Buck2_IN1 - Forward Drive & Buck2_IN2 - Reverse Drive
-FORWARD_6, REVERSE_6 = 13, 26   # Buck2_IN3 - Forward Drive & Buck2_IN4 - Reverse Drive
-
-
-
 """ 
 motors dict stores the Motor objects as values 
 """
 motors = {
     "bottom_left": Motor(FORWARD_1, REVERSE_1),  #GPIO: 27,22 (bottom_LEFT) & GPIO: 23,24 (bottom_RIGHT) 
     "bottom_right" : Motor(FORWARD_2, REVERSE_2),  
-    "front_left" : Motor(FORWARD_3, REVERSE_3), #GPIO: 5,6 (FRONT_LEFT) & GPIO: 12,16 (FRONT_RIGHT)
-    "front_right" : Motor(FORWARD_4, REVERSE_4), 
-    "back_left" : Motor(FORWARD_5, REVERSE_5), #GPIO: 4,17 (BACK_LEFT) & GPIO: 13,26 (BACK_RIGHT)
-    "back_right" : Motor(FORWARD_6, REVERSE_6)
+    "front_vert" : Motor(FORWARD_3, REVERSE_3), #GPIO: 5,6 (FRONT_LEFT) & GPIO: 12,16 (FRONT_RIGHT)
+    "back_vert" : Motor(FORWARD_4, REVERSE_4)
 }
 
 
@@ -40,25 +34,23 @@ motors = {
     Turn all of the top motors ON at a given speed
 """
 def move_vertical(up: bool, speed: float, duration: int):
-    motorFL, motorFR = "front_left", "front_right" if up else "back_left", "back_right"
-    motorBL, motorBR = "front_left", "front_right" if not up else "back_left", "back_right"
-    #Move up at this point
-    motors[motorFL].forward(speed)
-    motors[motorFR].forward(speed)
-    motors[motorBL].forward(speed)
-    motors[motorBR].forward(speed)
-    sleep(duration)
+    motorF, motorB = "front_vert", "back_vert"
+    if up:
+        #Move up at this point
+        motors[motorF].forward(speed)
+        motors[motorB].forward(speed)
+        sleep(duration)
+    else:
+        motors[motorF].backward(speed)
+        motors[motorB].backward(speed)
+        
     #Reverse to stop movement
-    motors[motorFL].reverse()
-    motors[motorFR].reverse()
-    motors[motorBL].reverse()
-    motors[motorBR].reverse()
+    motors[motorF].reverse()
+    motors[motorB].reverse()
     sleep(1)
     # Stop the motion of motors
-    motors[motorFL].stop()
-    motors[motorFR].stop()
-    motors[motorBL].stop()
-    motors[motorBR].stop()
+    motors[motorF].stop()
+    motors[motorB].stop()
     
 """ 
 Controls to move the vehicle either forward or backward. 
@@ -99,28 +91,22 @@ def turn(direction: bool, speed: float, duration: int): # Also Yaw
 # motor forward left = motorFL
 # motor backward left = motorBL
 def pitch(direction: bool, speed: float, duration: int):
-    motorFL, motorFR = "front_left", "front_right" if direction else "back_left", "back_right"
-    motorBL, motorBR = "front_left", "front_right" if not direction else "back_left", "back_right"
+    motorF, motorB = "front_vert", "back_vert" if direction else "back_vert", "front_vert"
+    
         
     # This is the case where you want to pitch the vehicle up
-    motors[motorFL].forward(speed)
-    motors[motorFR].forward(speed)
+    motors[motorF].forward(speed)
     # This depends on the exquisite motion of the motors, if more differential thrust is needed, these values will be adjust
-    motors[motorBL].backward(0.5 * speed)     # This depends 
-    motors[motorBR].backward(0.5 * speed)
+    motors[motorB].backward(0.5 * speed)     # This depends 
     sleep(duration) 
 
-    motors[motorFL].reverse()
-    motors[motorFR].reverse()
-    motors[motorBL].reverse()
-    motors[motorBR].reverse()
+    motors[motorF].reverse()
+    motors[motorB].reverse()
     sleep(1)
     
-    motors[motorFL].stop()
-    motors[motorFR].stop()
-    motors[motorBL].stop()
-    motors[motorBR].stop()
-    return
+    motors[motorF].stop()
+    motors[motorB].stop()
+    
 
 #LEFT/RIGHT: M5-M6
 #UP/DOWN: M1+M2+M3+M4+M5+M6
